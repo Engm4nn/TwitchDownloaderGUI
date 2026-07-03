@@ -32,7 +32,7 @@ The GUI provides five tabs:
 | **VOD** | Download a VOD/highlight as `.mp4` (or `.m4a` audio only), with optional trim, quality, and OAuth for sub-only VODs |
 | **Clip** | Download a clip |
 | **Chat** | Download chat as JSON (renderable), HTML, or plain text |
-| **Chat Render** | Render a downloaded chat JSON to a video overlay, with a font picker, font size, dimensions, framerate, background color, outlines, and timestamps |
+| **Chat Render** | Render a downloaded chat JSON to a video overlay, with a font picker, font size, dimensions, framerate, background color, outlines, timestamps, and BTTV/FFZ/7TV emote toggles |
 | **Info** | Show available qualities and metadata for a VOD or clip |
 
 Quality-of-life touches: paste a full Twitch URL *or* a bare ID (both work),

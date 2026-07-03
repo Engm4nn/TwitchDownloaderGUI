@@ -296,6 +296,10 @@ def build_command(mode, f):
             argv.append("--outline")
         if f.get("timestamp"):
             argv.append("--timestamp")
+        # Third-party emotes default ON in the CLI; only disable when unchecked.
+        for key, flag in (("bttv", "--bttv"), ("ffz", "--ffz"), ("stv", "--stv")):
+            if f.get(key) is False:
+                argv.append(f"{flag}=false")
         if FFMPEG_PATH:
             argv.extend(["--ffmpeg-path", FFMPEG_PATH])
         label = "Chat render"
@@ -628,6 +632,26 @@ PAGE_HTML = r"""<!DOCTYPE html>
       </div>
     </div>
     <div class="row">
+      <div class="field" style="min-width:100%">
+        <label>Third-party emotes</label>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+          <div class="check" style="padding-top:0">
+            <input type="checkbox" id="render-bttv" checked>
+            <label for="render-bttv" style="margin:0;color:var(--text)">BTTV</label>
+          </div>
+          <div class="check" style="padding-top:0">
+            <input type="checkbox" id="render-ffz" checked>
+            <label for="render-ffz" style="margin:0;color:var(--text)">FFZ</label>
+          </div>
+          <div class="check" style="padding-top:0">
+            <input type="checkbox" id="render-stv" checked>
+            <label for="render-stv" style="margin:0;color:var(--text)">7TV</label>
+          </div>
+        </div>
+        <div class="hint">Emotes must be embedded in the chat JSON (or fetched online at render time)</div>
+      </div>
+    </div>
+    <div class="row">
       <div class="field grow2">
         <label>Output folder</label>
         <input type="text" id="render-output_dir" class="outdir">
@@ -763,7 +787,8 @@ const FIELD_MAP = {
 };
 const CHECKBOX_MAP = {
   chatdownload: { embed: 'chat-embed' },
-  chatrender:   { outline: 'render-outline', timestamp: 'render-timestamp' },
+  chatrender:   { outline: 'render-outline', timestamp: 'render-timestamp',
+                  bttv: 'render-bttv', ffz: 'render-ffz', stv: 'render-stv' },
 };
 
 async function start(mode) {
