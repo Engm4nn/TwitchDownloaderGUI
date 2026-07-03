@@ -2,8 +2,7 @@
 
 A tiny, zero-dependency local web GUI for [TwitchDownloaderCLI](https://github.com/lay295/TwitchDownloader).
 It wraps the CLI's main functions — download VODs, clips, and chat, render chat
-to video, and look up VOD/clip info — behind a simple browser UI. Built for
-internal use on macOS.
+to video, and look up VOD/clip info — behind a simple browser UI, on macOS.
 
 Only requirements: **Python 3** (preinstalled on macOS / `brew install python`)
 and **ffmpeg** (`brew install ffmpeg`) for VOD downloads and chat renders.
@@ -41,6 +40,7 @@ script, one folder up, or anywhere on your `PATH`.
 - Output-file collisions auto-rename, so the CLI never blocks on a prompt.
 - Your output folder and OAuth token are remembered (in your browser's local storage).
 - Numeric render settings (width, height, framerate, font size) are whole numbers.
+- Chat Render has a **font picker** — "Inter Embedded" (bundled) is the default; other fonts installed on the Mac are also listed. Default font size is 24.
 - Typical chat-overlay workflow: **Chat** tab (JSON, embed emotes) → **Chat Render** tab.
 
 ## Credits

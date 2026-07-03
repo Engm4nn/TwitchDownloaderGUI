@@ -1,275 +1,102 @@
-<div align="center">
-  <a href="https://github.com/lay295/TwitchDownloader">
-    <img src="TwitchDownloaderWPF/Images/Logo.png" alt="Logo" width="80" height="80">
-  </a>
-  <h3 align="center">Twitch Downloader</h3>
-  <div align="center">
-    Twitch VOD/Clip/Chat Downloader and Chat Renderer
-    <br />
-    <br />
-    <a href="https://github.com/lay295/TwitchDownloader/issues">Report Bug</a>
-  </div>
-</div>
+# TwitchDownloader GUI
 
-This document is also available in:
+> A fork of [**lay295/TwitchDownloader**](https://github.com/lay295/TwitchDownloader)
+> that adds a simple, self-contained **graphical interface** on top of the
+> official command-line tool.
 
-- [**German / Deutsch**](README_de.md)]
-- [**Italian / Italiano**](README_it.md)
-- [**Japanese / 日本語**](README_ja.md)
-- [**Portuguese (Brazil) / Português (Brasil)**](README_pt-br.md)
-- [**Russian / Русский**](README_ru.md)
-- [**Spanish / Español**](README_es.md)
-- [**Turkish / Türkçe**](README_tr.md)
-- [**Simplified Chinese / 简体中文**](README_zh-cn.md)
-- [**Traditonal Chinese / 繁體中文**](README_zh-tw.md)
-- [**French / Français**](README_fr.md)
+The upstream project ships a powerful cross-platform CLI
+(`TwitchDownloaderCLI`) for downloading Twitch VODs, clips, and chat, and for
+rendering chat to video. This fork keeps all of that untouched and adds a small
+local web GUI so you don't have to remember command-line flags — you just open a
+page in your browser and click.
 
-## What Can It Do?
+Everything the CLI does is still done by the CLI. The GUI is a thin wrapper that
+builds and runs the right command for you.
 
-- Download Twitch VODs
-- Download Twitch Clips
-- Download chat for VODs and Clips, in either a [JSON with all the original information](https://github.com/lay295/TwitchDownloader/files/13495494/ExampleMoonMoonJsonFile.json), a browser HTML file, or a [plain text file](https://github.com/lay295/TwitchDownloader/files/13495523/ExampleMoonMoonTextFile.txt)
-- Update the contents of a previously generated JSON chat file with an option to save as another format
-- Use a previously generated JSON chat file to render the chat with Twitter Twemoji or Google Noto Color emojis and BTTV, FFZ, 7TV static and animated emotes
+---
 
-### Chat Render Example
+## What this fork adds
 
-<https://user-images.githubusercontent.com/1060681/197653099-c3fd12c2-f03a-4580-84e4-63ce3f36be8d.mp4>
+Everything lives in the [`gui/`](gui/) folder — the rest of the repository is
+the unmodified upstream source.
 
-# GUI
+- **`gui/twitchdownloader_gui.py`** — the whole GUI in a single file, using only
+  the Python standard library (no `pip install` needed).
+- **`gui/TwitchDownloader GUI.command`** — a double-click launcher for macOS.
+- **`gui/README.md`** — usage notes for the GUI on its own.
 
-## Windows WPF
+The GUI provides five tabs:
 
-![](https://i.imgur.com/bLegxGX.gif)
+| Tab | What it does |
+|---|---|
+| **VOD** | Download a VOD/highlight as `.mp4` (or `.m4a` audio only), with optional trim, quality, and OAuth for sub-only VODs |
+| **Clip** | Download a clip |
+| **Chat** | Download chat as JSON (renderable), HTML, or plain text |
+| **Chat Render** | Render a downloaded chat JSON to a video overlay, with a font picker, font size, dimensions, framerate, background color, outlines, and timestamps |
+| **Info** | Show available qualities and metadata for a VOD or clip |
 
-### [See the full WPF documentation here](TwitchDownloaderWPF/README.md)
+Quality-of-life touches: paste a full Twitch URL *or* a bare ID (both work),
+filenames are auto-suggested, live progress and logs stream at the bottom of the
+page, output-file collisions auto-rename instead of blocking, and your output
+folder / OAuth token are remembered between sessions.
 
-### Functionality
+---
 
-The Windows WPF GUI implements all of the main functions of the program along with some extra quality of life functions:
+## Quick start (macOS, Apple Silicon)
 
-- Queue up multiple download/render jobs to run simultaneously
-- Create a list of download jobs from a list of vod/clip links
-- Search for and download multiple VODs/clips from any streamer without leaving the app
+The easiest way is the prebuilt bundle:
 
-### Multi-language Support
+1. Go to the [**Releases**](https://github.com/Engm4nn/TwitchDownloaderGUI/releases)
+   page and download the latest `TwitchDownloaderGUI-macos-arm64.zip`.
+2. Unzip it.
+3. Double-click **`TwitchDownloader GUI.command`**.
+   - On first launch macOS may block it (unsigned). Right-click the file →
+     **Open**, or run `xattr -dr com.apple.quarantine .` inside the folder.
+4. A browser tab opens at `http://127.0.0.1:5959` (localhost only). Keep the
+   terminal window open while you use it; press Ctrl+C to quit.
 
-The Windows WPF GUI is available in multiple languages thanks to community translations. See the [Localization section](TwitchDownloaderWPF/README.md#localization) of the [WPF README](TwitchDownloaderWPF/README.md) for more details.
+The bundle already contains a matching `TwitchDownloaderCLI` binary, so there is
+nothing else to download.
 
-### Theming
+### Running from source instead
 
-The Windows WPF GUI comes bundled with both light and dark themes, along with an option to update live according the current Windows theme. It also supports user created themes! See the [Theming section](TwitchDownloaderWPF/README.md#theming) of the [WPF README](TwitchDownloaderWPF/README.md) for more details.
+If you already have a `TwitchDownloaderCLI` binary, you can just run the GUI
+script and it will find the CLI automatically (next to the script, one folder
+up, or on your `PATH`):
 
-### Video Demonstration
-
-<https://www.youtube.com/watch?v=0W3MhfhnYjk>
-(older version, same concept)
-
-## Linux?
-
-Check twitch-downloader-gui on [github](https://github.com/mohad12211/twitch-downloader-gui) or on the [AUR](https://aur.archlinux.org/packages/twitch-downloader-gui) for a Linux GUI wrapper for the CLI.
-
-## MacOS?
-
-No GUI is available for MacOS yet :(
-
-# CLI
-
-### [See the full CLI documentation here](TwitchDownloaderCLI/README.md)
-
-The CLI is cross-platform and implements the main functions of the program. It works on Windows, Linux, and MacOS<sup>*</sup>.
-
-<sup>*Only Intel Macs have been tested</sup>
-
-With the CLI, it is possible to automate video processing using external scripts. For example, you could copy-paste the following code into a `.bat` file on Windows to download a VOD and its chat, and then render the chat, all from a single input.
-
-```bat
-@echo off
-set /p vodid="Enter VOD ID: "
-TwitchDownloaderCLI.exe videodownload --id %vodid% --ffmpeg-path "ffmpeg.exe" -o %vodid%.mp4
-TwitchDownloaderCLI.exe chatdownload --id %vodid% -o %vodid%_chat.json -E
-TwitchDownloaderCLI.exe chatrender -i %vodid%_chat.json -h 1080 -w 422 --framerate 30 --update-rate 0 --font-size 18 -o %vodid%_chat.mp4
+```sh
+python3 gui/twitchdownloader_gui.py
 ```
 
-## Windows - Getting started
+### Requirements
 
-1. Go to [Releases](https://github.com/lay295/TwitchDownloader/releases/) and download the latest version for Windows or [build from source](#building-from-source).
-2. Extract `TwitchDownloaderCLI.exe`.
-3. Browse to where you extracted the executable:
+- **Python 3** — preinstalled on macOS (or `brew install python`).
+- **ffmpeg** — `brew install ffmpeg`. Needed for VOD downloads and chat renders.
 
-```
-cd C:\folder\containing\TwitchDownloaderCLI
-```
+---
 
-4. If you do not have FFmpeg, you can install it via [Chocolatey package manager](https://community.chocolatey.org/), or you can get it as a standalone file from [ffmpeg.org](https://ffmpeg.org/download.html) or by using TwitchDownloaderCLI:
+## Building / getting the CLI yourself
 
-```
-TwitchDownloaderCLI.exe ffmpeg --download
-```
+This fork does **not** modify the downloader itself, so you don't need to build
+anything to use the GUI. If you want a fresh or different-platform
+`TwitchDownloaderCLI`, grab an official build from the upstream
+[releases](https://github.com/lay295/TwitchDownloader/releases), or build it from
+the source in this repo per the upstream instructions in
+[`README-upstream.md`](README-upstream.md).
 
-5. You can now start using TwitchDownloaderCLI, for example:
+The prebuilt bundle in this fork's releases is **macOS Apple Silicon (arm64)**
+only. For Intel Macs, Windows, or Linux, use the matching upstream CLI binary
+alongside `gui/twitchdownloader_gui.py`.
 
-```
-TwitchDownloaderCLI.exe videodownload --id <vod-id-here> -o out.mp4
-```
+---
 
-You can find more example commands in the [CLI README](TwitchDownloaderCLI/README.md#example-commands).
+## Credits & license
 
-## Linux – Getting started
+All the real work — downloading, parsing, and rendering — is done by
+[**lay295/TwitchDownloader**](https://github.com/lay295/TwitchDownloader) and its
+contributors. This fork only adds a convenience GUI on top.
 
-1. Some distros, like Linux Alpine, lack fonts for some languages (Arabic, Persian, Thai, etc.) If this is the case for you, install additional fonts families such as [Noto](https://fonts.google.com/noto/specimen/Noto+Sans) or check your distro's wiki page on fonts as it may have an install command for this specific scenario, such as the [Linux Alpine](https://wiki.alpinelinux.org/wiki/Fonts) font page.
-2. Ensure both `fontconfig` and `libfontconfig1` are installed. `apt-get install fontconfig libfontconfig1` on Ubuntu.
-3. Go to [Releases](https://github.com/lay295/TwitchDownloader/releases/) and download the latest binary for Linux, grab the [AUR Package](https://aur.archlinux.org/packages/twitch-downloader-bin/) for Arch Linux, or [build from source](#building-from-source).
-4. Extract `TwitchDownloaderCLI`.
-5. Browse to where you extracted the binary:
-
-```
-cd directory/containing/TwitchDownloaderCLI
-```
-
-6. Give the binary executable rights:
-
-```
-sudo chmod +x TwitchDownloaderCLI
-```
-
-7. a) If you do not have FFmpeg, you should install it system-wide via your distro package manager, however you can also get it as a standalone file from [ffmpeg.org](https://ffmpeg.org/download.html) or by using TwitchDownloaderCLI:
-
-```
-./TwitchDownloaderCLI ffmpeg --download
-```
-
-7. b) If downloaded as a standalone file, you must also give it executable rights with:
-
-```
-sudo chmod +x ffmpeg
-```
-
-8. You can now start using TwitchDownloaderCLI, for example:
-
-```
-./TwitchDownloaderCLI videodownload --id <vod-id-here> -o out.mp4
-```
-
-You can find more example commands in the [CLI README](TwitchDownloaderCLI/README.md#example-commands).
-
-## MacOS – Getting started
-
-1. If your device has an Apple Silicon M-series processor, ensure that you download the arm64 binary, however if you would like to use the x64 binary on Apple Silicon it must be run via a terminal session running under Rosetta 2:
-
-```
-arch -x86_64 zsh
-```
-
-2. Go to [Releases](https://github.com/lay295/TwitchDownloader/releases/) and download the latest binary for MacOS or [build from source](#building-from-source).
-3. Extract `TwitchDownloaderCLI`.
-4. Browse to where you extracted the binary:
-
-```
-cd directory/containing/TwitchDownloaderCLI
-```
-
-5. Give the binary executable rights in the terminal:
-
-```
-chmod +x TwitchDownloaderCLI
-```
-
-6. a) If you do not have FFmpeg, you can install it system-wide via the [Homebrew package manager](https://brew.sh/), or you can get it as a standalone file from [ffmpeg.org](https://ffmpeg.org/download.html) or by using TwitchDownloaderCLI:
-
-```
-./TwitchDownloaderCLI ffmpeg --download
-```
-
-6. b) If downloaded as a standalone file, you must also give it executable rights with:
-
-```
-chmod +x ffmpeg
-```
-
-7. You can now start using TwitchDownloaderCLI, for example:
-
-```
-./TwitchDownloaderCLI videodownload --id <vod-id-here> -o out.mp4
-```
-
-You can find more example commands in the [CLI README](TwitchDownloaderCLI/README.md#example-commands).
-
-# Building from source
-
-## Requirements
-
-- [.NET 10.0.x SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
-- About 1GB of disk space
-
-## Build Instructions
-
-1. Clone the repository:
-
-```
-git clone https://github.com/lay295/TwitchDownloader.git
-```
-
-2. Navigate to the solution folder:
-
-```
-cd TwitchDownloader
-```
-
-3. Restore the solution:
-
-```
-dotnet restore
-```
-
-- Non-Windows devices may need to explicitly specify a project to restore, i.e. `dotnet restore TwitchDownloaderCLI`
-
-4. a) Build the GUI:
-
-```
-dotnet publish TwitchDownloaderWPF -p:PublishProfile=Windows
-```
-
-4. b) Build the CLI:
-
-```
-dotnet publish TwitchDownloaderCLI -p:PublishProfile=<Profile>
-```
-
-- Applicable Profiles: `Windows`, `Linux`, `LinuxAlpine`, `LinuxArm`, `LinuxArm64`, `MacOS`, `MacOSArm64`
-
-5. a) Navigate to the GUI build folder:
-
-```
-cd TwitchDownloaderWPF/bin/Release/net10.0-windows/publish/win-x64
-```
-
-5. b) Navigate to the CLI build folder:
-
-```
-cd TwitchDownloaderCLI/bin/Release/net10.0/publish
-```
-
-# Third Party Credits
-
-Chat Renders are rendered with [SkiaSharp](https://github.com/mono/SkiaSharp) and [HarfBuzzSharp](https://github.com/mono/SkiaSharp) © Microsoft Corporation.
-
-Chat Renders are encoded and Video Downloads are finalized with [FFmpeg](https://ffmpeg.org/) © The FFmpeg developers.
-
-Chat Renders may use [Noto Color Emoji](https://github.com/googlefonts/noto-emoji) © Google and contributors.
-
-Chat Renders may use [Twemoji](https://github.com/twitter/twemoji) © Twitter and contributors.
-
-Bundled FFmpeg binaries are fetched from [gyan.dev](https://www.gyan.dev/ffmpeg/) © Gyan Doshi.
-
-FFmpeg binaries fetched are runtime are downloaded using [Xabe.FFmpeg.Downloader](https://github.com/tomaszzmuda/Xabe.FFmpeg) © Xabe.
-
-Chat HTML exports utilize the _Inter_ typeface hosted by the [Google Fonts API](https://fonts.google.com/) © Google.
-
-For a full list of utilized external libraries, see [THIRD-PARTY-LICENSES.txt](./TwitchDownloaderCore/Resources/THIRD-PARTY-LICENSES.txt).
-
-# License
-
-[MIT](./LICENSE.txt)
-
-TwitchDownloader is in no way associated with Twitch Interactive, Inc. or its affiliates.
+The project is licensed under the **MIT License** (see
+[`LICENSE.txt`](LICENSE.txt)); this fork's additions are released under the same
+license. The original upstream documentation is preserved in
+[`README-upstream.md`](README-upstream.md).

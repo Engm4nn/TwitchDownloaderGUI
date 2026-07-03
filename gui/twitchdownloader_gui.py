@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-TwitchDownloader GUI — internal tool.
+TwitchDownloader GUI.
 
 A zero-dependency local web GUI wrapping TwitchDownloaderCLI.
 Run:  python3 twitchdownloader_gui.py   (or double-click "TwitchDownloader GUI.command")
@@ -53,6 +53,37 @@ def find_ffmpeg():
 
 
 FFMPEG_PATH = find_ffmpeg()
+
+# The CLI's built-in bundled font, and the default for chat renders.
+EMBEDDED_FONT = "Inter Embedded"
+
+
+def list_fonts():
+    """Return a sorted list of installed font family names, with the CLI's
+    bundled 'Inter Embedded' always first as the default choice."""
+    families = set()
+    try:
+        # `atsutil fonts -list` is slow; parsing font filenames is fast and works.
+        for root in ("/System/Library/Fonts", "/Library/Fonts",
+                     os.path.expanduser("~/Library/Fonts")):
+            if not os.path.isdir(root):
+                continue
+            for entry in os.listdir(root):
+                stem, ext = os.path.splitext(entry)
+                if ext.lower() in (".ttf", ".ttc", ".otf"):
+                    # "Arial Bold.ttf" -> "Arial"; strip common style suffixes.
+                    name = re.sub(
+                        r"[ _-]*(Bold|Italic|Oblique|Regular|Light|Medium|"
+                        r"SemiBold|Thin|Black|Condensed|Heavy)+$",
+                        "", stem, flags=re.IGNORECASE).strip()
+                    if name:
+                        families.add(name)
+    except OSError:
+        pass
+    return [EMBEDDED_FONT] + sorted(families, key=str.lower)
+
+
+FONTS = list_fonts()
 
 
 class Job:
@@ -253,7 +284,9 @@ def build_command(mode, f):
         argv.extend(["-w", num("width", "350", "Width", integer=True)])
         argv.extend(["-h", num("height", "600", "Height", integer=True)])
         argv.extend(["--framerate", num("framerate", "30", "Framerate", integer=True)])
-        argv.extend(["--font-size", num("font_size", "12", "Font size", integer=True)])
+        argv.extend(["--font-size", num("font_size", "24", "Font size", integer=True)])
+        font = f.get("font", "").strip() or EMBEDDED_FONT
+        argv.extend(["--font", font])
         bg = f.get("background_color", "").strip()
         if bg:
             if not re.fullmatch(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})", bg):
@@ -320,6 +353,7 @@ class Handler(BaseHTTPRequestHandler):
                 "output_dir": DEFAULT_OUTPUT_DIR,
                 "ffmpeg": FFMPEG_PATH,
                 "cli": CLI_PATH,
+                "fonts": FONTS,
             })
         else:
             self.send_error(404)
@@ -436,7 +470,7 @@ PAGE_HTML = r"""<!DOCTYPE html>
 <div class="wrap">
   <header>
     <h1>TwitchDownloader</h1>
-    <span class="sub">internal tool · wraps TwitchDownloaderCLI</span>
+    <span class="sub">a simple GUI for TwitchDownloaderCLI</span>
   </header>
 
   <div class="tabs">
@@ -573,7 +607,14 @@ PAGE_HTML = r"""<!DOCTYPE html>
       <div class="field"><label>Width</label><input type="number" min="1" step="1" id="render-width" value="350"></div>
       <div class="field"><label>Height</label><input type="number" min="1" step="1" id="render-height" value="600"></div>
       <div class="field"><label>Framerate</label><input type="number" min="1" step="1" id="render-framerate" value="30"><div class="hint">whole numbers only</div></div>
-      <div class="field"><label>Font size</label><input type="number" min="1" step="1" id="render-font_size" value="12"></div>
+      <div class="field"><label>Font size</label><input type="number" min="1" step="1" id="render-font_size" value="24"></div>
+    </div>
+    <div class="row">
+      <div class="field grow2">
+        <label>Font</label>
+        <select id="render-font"><option value="Inter Embedded">Inter Embedded (default)</option></select>
+        <div class="hint">"Inter Embedded" is bundled; other fonts must be installed on this Mac</div>
+      </div>
       <div class="field"><label>Background</label><input type="text" id="render-background_color" value="#111111"></div>
     </div>
     <div class="row">
@@ -660,6 +701,16 @@ fetch('/api/defaults').then(r => r.json()).then(d => {
       ['vod-oauth', 'info-oauth'].forEach(o => $(o).value = $(id).value);
     });
   });
+  // Populate the font dropdown (Inter Embedded stays the default first option).
+  const fontSel = $('render-font');
+  (d.fonts || []).forEach(name => {
+    if (name === 'Inter Embedded') return; // already present as default
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    fontSel.appendChild(opt);
+  });
+  fontSel.value = localStorage.getItem('renderFont') || 'Inter Embedded';
+  fontSel.addEventListener('change', () => localStorage.setItem('renderFont', fontSel.value));
 });
 
 // ---- auto filename suggestions ----
@@ -705,7 +756,7 @@ const FIELD_MAP = {
   chatdownload:  { id:'chat-id', format:'chat-format', beginning:'chat-beginning', ending:'chat-ending',
                    output_dir:'chat-output_dir', filename:'chat-filename' },
   chatrender:    { input:'render-input', width:'render-width', height:'render-height',
-                   framerate:'render-framerate', font_size:'render-font_size',
+                   framerate:'render-framerate', font_size:'render-font_size', font:'render-font',
                    background_color:'render-background_color',
                    output_dir:'render-output_dir', filename:'render-filename' },
   info:          { id:'info-id', oauth:'info-oauth' },
