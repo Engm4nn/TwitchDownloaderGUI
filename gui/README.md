@@ -41,8 +41,9 @@ script, one folder up, or anywhere on your `PATH`.
 - Your output folder and OAuth token are remembered (in your browser's local storage).
 - Numeric render settings (width, height, framerate, font size) are whole numbers.
 - Chat Render has a **font picker** — "Inter Embedded" (bundled) is the default; other fonts installed on the Mac are also listed. Default font size is 24.
-- Chat Render has **BTTV / FFZ / 7TV** third-party emote toggles (all on by default). They render when the emotes are embedded in the chat JSON — download chat with **Embed emotes/badges** checked, or add them later via the CLI's `chatupdate`.
-- Typical chat-overlay workflow: **Chat** tab (JSON, embed emotes) → **Chat Render** tab.
+- **Chat downloads embed emotes/badges by default** (BTTV / FFZ / 7TV, each toggleable). Embedding bakes the emotes into the JSON so they always render — this is why a chat downloaded with embedding shows third-party emotes and one without does not.
+- Chat Render also has BTTV / FFZ / 7TV toggles and a **font picker** ("Inter Embedded" bundled default, plus fonts installed on the Mac). Default font size is 24.
+- Typical chat-overlay workflow: **Chat** tab (JSON, embed on) → **Chat Render** tab.
 
 ## Credits
 

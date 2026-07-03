@@ -267,6 +267,10 @@ def build_command(mode, f):
         argv.extend(["-o", output])
         if f.get("embed") and fmt == "json":
             argv.append("-E")
+            # BTTV/FFZ/7TV embedding defaults ON in the CLI; disable when unchecked.
+            for key, flag in (("bttv", "--bttv"), ("ffz", "--ffz"), ("stv", "--stv")):
+                if f.get(key) is False:
+                    argv.append(f"{flag}=false")
         opt("-b", "beginning")
         opt("-e", "ending")
         if fmt == "txt":
@@ -570,8 +574,28 @@ PAGE_HTML = r"""<!DOCTYPE html>
         </select>
       </div>
       <div class="check">
-        <input type="checkbox" id="chat-embed">
+        <input type="checkbox" id="chat-embed" checked>
         <label for="chat-embed" style="margin:0;color:var(--text)">Embed emotes/badges (JSON)</label>
+      </div>
+    </div>
+    <div class="row" id="chat-embed-row">
+      <div class="field" style="min-width:100%">
+        <label>Emotes to embed (needs "Embed emotes/badges")</label>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+          <div class="check" style="padding-top:0">
+            <input type="checkbox" id="chat-bttv" checked>
+            <label for="chat-bttv" style="margin:0;color:var(--text)">BTTV</label>
+          </div>
+          <div class="check" style="padding-top:0">
+            <input type="checkbox" id="chat-ffz" checked>
+            <label for="chat-ffz" style="margin:0;color:var(--text)">FFZ</label>
+          </div>
+          <div class="check" style="padding-top:0">
+            <input type="checkbox" id="chat-stv" checked>
+            <label for="chat-stv" style="margin:0;color:var(--text)">7TV</label>
+          </div>
+        </div>
+        <div class="hint">Embedding bakes emotes into the JSON so they always render, even offline</div>
       </div>
     </div>
     <div class="row">
@@ -763,7 +787,17 @@ $('chat-format').addEventListener('change', () => {
   const f = $('chat-filename');
   const ext = '.' + $('chat-format').value;
   if (f.value) f.value = f.value.replace(/\.(json|html|txt)$/, '') + ext;
+  syncEmbedRow();
 });
+// The embed-emote sub-row only applies to embedded JSON downloads.
+function syncEmbedRow() {
+  const on = $('chat-embed').checked && $('chat-format').value === 'json';
+  const row = $('chat-embed-row');
+  row.style.opacity = on ? '1' : '0.4';
+  ['chat-bttv', 'chat-ffz', 'chat-stv'].forEach(id => $(id).disabled = !on);
+}
+$('chat-embed').addEventListener('change', syncEmbedRow);
+syncEmbedRow();
 $('render-input').addEventListener('input', () => {
   const f = $('render-filename');
   if (!f.value || f.dataset.auto === '1') {
@@ -786,7 +820,7 @@ const FIELD_MAP = {
   info:          { id:'info-id', oauth:'info-oauth' },
 };
 const CHECKBOX_MAP = {
-  chatdownload: { embed: 'chat-embed' },
+  chatdownload: { embed: 'chat-embed', bttv: 'chat-bttv', ffz: 'chat-ffz', stv: 'chat-stv' },
   chatrender:   { outline: 'render-outline', timestamp: 'render-timestamp',
                   bttv: 'render-bttv', ffz: 'render-ffz', stv: 'render-stv' },
 };
